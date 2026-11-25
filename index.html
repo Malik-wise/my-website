@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MediCare Clinic — Appointments & Triage Queue</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="nav-inner">
+      <div class="brand">
+        <span class="brand-badge">+</span>
+        <span>MediCare Clinic</span>
+      </div>
+      <nav class="nav-tabs" aria-label="Portal Navigation">
+        <button id="tabPatient" class="tab-btn active" type="button">Patient Appointments</button>
+        <button id="tabStaff" class="tab-btn" type="button">Authorized Staff Portal</button>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- ==================== PATIENT VIEW ==================== -->
+    <section id="patientView">
+      <div class="grid-2">
+        <!-- Book Appointment Form -->
+        <div class="card">
+          <h2>Book a Doctor Appointment</h2>
+          <p class="card-subtitle">Schedule a visit with a specialist. Clinical triage and internal notes are handled privately by clinic staff.</p>
+
+          <div class="privacy-banner">
+            <strong>Privacy Notice:</strong> Patients can book appointments here, but cannot view confidential clinical intake notes, triage severity scores, or internal queue records.
+          </div>
+
+          <form id="patientBookingForm" novalidate>
+            <div class="form-group">
+              <label for="apptName">Patient Full Name *</label>
+              <input id="apptName" type="text" placeholder="e.g., Sarah Nalwoga" />
+              <div class="error-text" id="errApptName"></div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="apptPhone">Phone Number *</label>
+                <input id="apptPhone" type="tel" placeholder="e.g., +256 700 123456" />
+                <div class="error-text" id="errApptPhone"></div>
+              </div>
+
+              <div class="form-group">
+                <label for="apptDepartment">Department *</label>
+                <select id="apptDepartment">
+                  <option value="">Select department</option>
+                  <option value="General Medicine">General Medicine</option>
+                  <option value="Pediatrics">Pediatrics</option>
+                  <option value="Cardiology">Cardiology</option>
+                  <option value="Orthopedics">Orthopedics</option>
+                  <option value="Maternity">Maternity</option>
+                </select>
+                <div class="error-text" id="errApptDepartment"></div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group">
+                <label for="apptDoctor">Preferred Doctor *</label>
+                <select id="apptDoctor">
+                  <option value="">Select doctor</option>
+                  <option value="Dr. Kato (General)">Dr. Kato — General Physician</option>
+                  <option value="Dr. Namukasa (Pediatrics)">Dr. Namukasa — Pediatrician</option>
+                  <option value="Dr. Okello (Cardiology)">Dr. Okello — Cardiologist</option>
+                  <option value="Dr. Mugisha (Orthopedics)">Dr. Mugisha — Orthopedist</option>
+                </select>
+                <div class="error-text" id="errApptDoctor"></div>
+              </div>
+
+              <div class="form-group">
+                <label for="apptDate">Preferred Date & Time *</label>
+                <input id="apptDate" type="datetime-local" />
+                <div class="error-text" id="errApptDate"></div>
+              </div>
+            </div>
+
+            <button class="btn btn-primary" type="submit">Confirm Appointment</button>
+          </form>
+        </div>
+
+        <!-- Patient's Non-Sensitive Appointment Confirmations -->
+        <div class="card">
+          <h2>Booked Appointments</h2>
+          <p class="card-subtitle">Showing non-sensitive booking confirmations only. Confidential intake data is restricted.</p>
+          <div id="patientApptList"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ==================== AUTHORIZED STAFF VIEW ==================== -->
+    <section id="staffView" class="hidden">
+      <!-- Staff PIN Gate -->
+      <div id="staffLockScreen" class="card lock-box">
+        <h2>Authorized Medical Staff Access</h2>
+        <p class="card-subtitle">Enter the staff PIN to access digital patient intake and the live priority queue.</p>
+        <form id="staffUnlockForm">
+          <div class="form-group">
+            <label for="staffPin">Staff Access PIN (Demo PIN: 2026)</label>
+            <input id="staffPin" type="password" placeholder="Enter PIN" maxlength="8" />
+            <div class="error-text" id="errStaffPin"></div>
+          </div>
+          <button class="btn btn-primary" type="submit">Unlock Staff Portal</button>
+        </form>
+      </div>
+
+      <!-- Unlocked Staff Workspace -->
+      <div id="staffWorkspace" class="hidden">
+        <div class="staff-header-bar">
+          <div>
+            <h2>Reception & Triage Workspace</h2>
+            <p class="card-subtitle" style="margin-bottom:0;">Emergency cases automatically move ahead of Urgent and Normal visits.</p>
+          </div>
+          <button id="lockStaffBtn" class="btn btn-secondary" type="button">Lock Portal</button>
+        </div>
+
+        <div class="grid-2">
+          <!-- Fast Digital Intake Form -->
+          <div class="card">
+            <h2>Fast Digital Intake</h2>
+            <p class="card-subtitle">Replaces paper registers with validated intake & condition severity capture.</p>
+
+            <form id="intakeForm" novalidate>
+              <div class="form-group">
+                <label for="intakeName">Patient Full Name *</label>
+                <input id="intakeName" type="text" placeholder="e.g., David Mukasa" />
+                <div class="error-text" id="errIntakeName"></div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="intakeAge">Age *</label>
+                  <input id="intakeAge" type="number" min="0" max="125" placeholder="Years" />
+                  <div class="error-text" id="errIntakeAge"></div>
+                </div>
+
+                <div class="form-group">
+                  <label for="intakeSeverity">Condition Severity *</label>
+                  <select id="intakeSeverity">
+                    <option value="Normal">Normal</option>
+                    <option value="Urgent">Urgent</option>
+                    <option value="Emergency">Emergency</option>
+                  </select>
+                  <div class="error-text" id="errIntakeSeverity"></div>
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group">
+                  <label for="intakeDepartment">Department *</label>
+                  <select id="intakeDepartment">
+                    <option value="">Select department</option>
+                    <option value="Emergency & Trauma">Emergency & Trauma</option>
+                    <option value="General Medicine">General Medicine</option>
+                    <option value="Pediatrics">Pediatrics</option>
+                    <option value="Cardiology">Cardiology</option>
+                    <option value="Orthopedics">Orthopedics</option>
+                  </select>
+                  <div class="error-text" id="errIntakeDepartment"></div>
+                </div>
+
+                <div class="form-group">
+                  <label for="intakeDoctor">Assigned Doctor *</label>
+                  <select id="intakeDoctor">
+                    <option value="">Select doctor</option>
+                    <option value="Dr. Kato (General)">Dr. Kato (General)</option>
+                    <option value="Dr. Namukasa (Pediatrics)">Dr. Namukasa (Pediatrics)</option>
+                    <option value="Dr. Okello (Cardiology)">Dr. Okello (Cardiology)</option>
+                    <option value="Dr. Mugisha (Orthopedics)">Dr. Mugisha (Orthopedics)</option>
+                  </select>
+                  <div class="error-text" id="errIntakeDoctor"></div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label for="intakeNotes">Crucial Clinical / Triage Notes (Confidential) *</label>
+                <textarea id="intakeNotes" placeholder="Symptoms, vitals, allergies, or chief complaint..."></textarea>
+                <div class="error-text" id="errIntakeNotes"></div>
+              </div>
+
+              <button class="btn btn-primary" type="submit">Add to Priority Queue</button>
+            </form>
+          </div>
+
+          <!-- Live Queue Management -->
+          <div class="card">
+            <h2>Live Priority Queue</h2>
+            <p class="card-subtitle">Automatically sorted by urgency (Emergency → Urgent → Normal), then arrival time.</p>
+
+            <div class="stats-row">
+              <div class="stat-card emergency">
+                <div class="stat-num" id="countEmergency">0</div>
+                <div class="stat-label">Emergency</div>
+              </div>
+              <div class="stat-card urgent">
+                <div class="stat-num" id="countUrgent">0</div>
+                <div class="stat-label">Urgent</div>
+              </div>
+              <div class="stat-card normal">
+                <div class="stat-num" id="countNormal">0</div>
+                <div class="stat-label">Normal</div>
+              </div>
+            </div>
+
+            <div class="queue-controls">
+              <input id="queueSearch" type="search" placeholder="Search name, department, doctor, or notes..." />
+              <select id="queueFilter">
+                <option value="ALL">All Severities</option>
+                <option value="Emergency">Emergency Only</option>
+                <option value="Urgent">Urgent Only</option>
+                <option value="Normal">Normal Only</option>
+              </select>
+            </div>
+
+            <div id="liveQueueList"></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>
